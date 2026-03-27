@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<!--
+	NSAllowsArbitraryLoads is enabled because Delegator connects to user-hosted
+	OpenClaw Gateway instances which may run on local networks (Tailscale, LAN)
+	over plain HTTP without TLS. The app warns users when connecting over
+	unencrypted HTTP to non-localhost addresses (see ConnectView.swift).
+-->
+<dict>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+</dict>
+</plist>

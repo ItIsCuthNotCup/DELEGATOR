@@ -1,0 +1,33 @@
+# Xcode
+xcuserdata/
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+DerivedData/
+*.pbxuser
+*.perspectivev3
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+build/
+
+# Environment & secrets
+.env
+.env.*
+*.key
+*.pem
+*.p12
+openclaw.json
+
+# System
+.DS_Store
+.AppleDouble
+.LSOverride
+Thumbs.db
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# Debug logs
+delegator_debug.log

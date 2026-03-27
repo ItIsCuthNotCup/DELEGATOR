@@ -2,22 +2,20 @@
 //  DelegatorApp.swift
 //  Delegator
 //
-//  Created by Jacob Cuthbertson on 3/27/26.
-//
 
 import SwiftUI
 import SwiftData
 
 @main
 struct DelegatorApp: App {
-    var sharedModelContainer: ModelContainer = {
-        let schema = Schema([
-            Item.self,
-        ])
-        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+    @State private var appState = AppState()
+    @Environment(\.scenePhase) private var scenePhase
 
+    var sharedModelContainer: ModelContainer = {
+        let schema = Schema([CostRecord.self])
+        let config = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
         do {
-            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+            return try ModelContainer(for: schema, configurations: [config])
         } catch {
             fatalError("Could not create ModelContainer: \(error)")
         }
@@ -26,7 +24,19 @@ struct DelegatorApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environment(appState)
+                .preferredColorScheme(.dark)
         }
         .modelContainer(sharedModelContainer)
+        .onChange(of: scenePhase) { _, newPhase in
+            switch newPhase {
+            case .active:
+                appState.handleForeground()
+            case .background:
+                appState.handleBackground()
+            default:
+                break
+            }
+        }
     }
 }

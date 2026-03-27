@@ -2,60 +2,51 @@
 //  ContentView.swift
 //  Delegator
 //
-//  Created by Jacob Cuthbertson on 3/27/26.
-//
 
 import SwiftUI
-import SwiftData
 
 struct ContentView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var items: [Item]
+    @Environment(AppState.self) private var appState
 
     var body: some View {
-        NavigationSplitView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))")
-                    } label: {
-                        Text(item.timestamp, format: Date.FormatStyle(date: .numeric, time: .standard))
+        if appState.isOnboarding {
+            ConnectView(appState: appState)
+        } else {
+            MainTabView(appState: appState)
+                .task {
+                    if appState.connectionState == .disconnected {
+                        await appState.connectFromKeychain()
                     }
                 }
-                .onDelete(perform: deleteItems)
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
-                    }
-                }
-            }
-        } detail: {
-            Text("Select an item")
-        }
-    }
-
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(timestamp: Date())
-            modelContext.insert(newItem)
-        }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            for index in offsets {
-                modelContext.delete(items[index])
-            }
         }
     }
 }
 
-#Preview {
-    ContentView()
-        .modelContainer(for: Item.self, inMemory: true)
+struct MainTabView: View {
+    @Bindable var appState: AppState
+
+    var body: some View {
+        TabView {
+            DashboardTab(appState: appState)
+                .tabItem {
+                    Label("Dashboard", systemImage: "rectangle.3.group")
+                }
+
+            ActivityTab(appState: appState)
+                .tabItem {
+                    Label("Activity", systemImage: "waveform")
+                }
+
+            CronTab(appState: appState)
+                .tabItem {
+                    Label("Cron", systemImage: "clock.arrow.circlepath")
+                }
+
+            SettingsTab(appState: appState)
+                .tabItem {
+                    Label("Settings", systemImage: "gearshape")
+                }
+        }
+        .tint(Theme.accentYellow)
+    }
 }
