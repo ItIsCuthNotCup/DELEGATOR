@@ -36,7 +36,7 @@ All colors, fonts, and radii are in `Theme.swift`. Never hardcode colors — alw
 The visual language is "dark glass" — near-black translucent panels on deep black backgrounds.
 Signature accent: `Theme.accentYellow` (#FFD60A). Monospaced font for all data values.
 
-See DELEGATOR-SPEC.md Section 6 for the complete design token reference.
+See `Theme.swift` for the complete design token reference.
 
 ## Key Patterns
 

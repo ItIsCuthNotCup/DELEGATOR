@@ -9,7 +9,10 @@ import SwiftUI
 func debugWrite(_ message: String) {
     #if DEBUG
     let line = "\(Date()): \(message)\n"
-    let url = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("delegator_debug.log")
+    let dir = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        .appendingPathComponent("Delegator", isDirectory: true)
+    try? FileManager.default.createDirectory(at: dir, withIntermediateDirectories: true)
+    let url = dir.appendingPathComponent("delegator_debug.log")
     if let data = line.data(using: .utf8) {
         if FileManager.default.fileExists(atPath: url.path) {
             if let handle = try? FileHandle(forWritingTo: url) {

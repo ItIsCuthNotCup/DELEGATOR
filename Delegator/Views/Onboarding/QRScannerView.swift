@@ -115,7 +115,8 @@ class QRScannerViewController: UIViewController, AVCaptureMetadataOutputObjectsD
         guard !hasScanned,
               let object = metadataObjects.first as? AVMetadataMachineReadableCodeObject,
               object.type == .qr,
-              let value = object.stringValue else { return }
+              let value = object.stringValue,
+              value.count <= 2048 else { return }
 
         hasScanned = true
         UIImpactFeedbackGenerator(style: .medium).impactOccurred()

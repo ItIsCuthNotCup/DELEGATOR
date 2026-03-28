@@ -11,6 +11,10 @@ final class KeychainManager {
 
     private let service = "dev.delegator.ios"
 
+    enum KeychainError: Error {
+        case saveFailed(OSStatus)
+    }
+
     private enum Key: String {
         case gatewayURL = "gateway_url"
         case gatewayToken = "gateway_token"
@@ -64,8 +68,9 @@ final class KeychainManager {
 
     // MARK: - Private
 
-    private func save(key: Key, value: String) {
-        guard let data = value.data(using: .utf8) else { return }
+    @discardableResult
+    private func save(key: Key, value: String) -> Bool {
+        guard let data = value.data(using: .utf8) else { return false }
         delete(key: key)
 
         let query: [String: Any] = [
@@ -75,7 +80,11 @@ final class KeychainManager {
             kSecValueData as String: data,
             kSecAttrAccessible as String: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
         ]
-        SecItemAdd(query as CFDictionary, nil)
+        let status = SecItemAdd(query as CFDictionary, nil)
+        if status != errSecSuccess {
+            debugWrite("[Delegator:keychain] save failed for \(key.rawValue): OSStatus \(status)")
+        }
+        return status == errSecSuccess
     }
 
     private func read(key: Key) -> String? {
